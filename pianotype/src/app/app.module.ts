@@ -1,4 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms' ;
 import { NgModule } from '@angular/core';
 
 //components
@@ -17,7 +18,8 @@ import { LoadMusicXmlService } from './services/load-music-xml.service';
   ],
   imports: [
     BrowserModule,
-    HttpModule
+    HttpModule,
+    FormsModule
   ],
   providers: [
   	PlayNotesService,

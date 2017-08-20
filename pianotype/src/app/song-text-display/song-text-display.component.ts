@@ -6,6 +6,7 @@ import { LoadMusicXmlService } from '../services/load-music-xml.service';
 import { XmlSong } from '../datamodels/xml-song';
 import { SingleNote } from '../datamodels/single-note';
 
+/*TODO: modularize this class*/
 @Component({
   selector: 'app-song-text-display',
   templateUrl: './song-text-display.component.html',
@@ -16,6 +17,8 @@ export class SongTextDisplayComponent implements OnInit {
 	noteToKeyMap:any;
 	xmlSong:XmlSong;
 	parsedSong:SingleNote[];
+	songNames:string[] = ['Sonata No 1 Movement 1', 'moon light sonata', 'ill be there', 'jingle bells', 'yankee doodle']
+	selectedSongName:string = this.songNames[1];
 
 	constructor(
 		private playNotesService:PlayNotesService,
@@ -70,16 +73,21 @@ export class SongTextDisplayComponent implements OnInit {
 		let songName:string = 'Sonata No 1 Movement 1';
 		songName = 'moon light sonata';
 		songName = 'ill be there';
-		this.loadMusicXml.loadSong(songName,(xmlSong)=>{
-			this.xmlSong = xmlSong;
-			this.parsedSong = this.parseSong(xmlSong);
-			console.log(this.parsedSong);
-			this.parsedSong = this.parsedSong.filter((note)=>{return note.backup==0});
-			this.playSong(this.parsedSong);
-			console.log(this.parsedSong);
-		});
+		songName = 'jingle bells';
+		songName = 'yankee doodle';
+		this.selectSong();
+		setTimeout(()=>{console.log(this.selectedSongName)},10000)
 	}
 
+	selectSong() {
+		this.loadMusicXml.loadSong(this.selectedSongName,(xmlSong)=>{
+			this.xmlSong = xmlSong;
+			this.parsedSong = this.parseSong(xmlSong);
+			this.parsedSong = this.parsedSong.filter((note)=>{return note.backup==0});
+		})
+	}
+
+	/*TODO: move all parsing to external class*/
 	parseSong(xmlSong?:XmlSong):SingleNote[]{
 		let xmlSongDom = $.parseXML(xmlSong?xmlSong.xml:this.xmlSong.xml);
 		let measures:NodeListOf<Element> = xmlSongDom.getElementsByTagName('measure');
