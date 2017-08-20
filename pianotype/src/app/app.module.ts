@@ -6,18 +6,22 @@ import { AppComponent } from './app.component';
 import { SongTextDisplayComponent } from './song-text-display/song-text-display.component';
 
 //services
+import { HttpModule, Http } from '@angular/http';
 import { PlayNotesService } from './services/playnotes.service';
+import { LoadMusicXmlService } from './services/load-music-xml.service';
 
 @NgModule({
   declarations: [
     AppComponent,
-    SongTextDisplayComponent
+    SongTextDisplayComponent,
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    HttpModule
   ],
   providers: [
-  	PlayNotesService
+  	PlayNotesService,
+    LoadMusicXmlService
   ],
   bootstrap: [AppComponent]
 })

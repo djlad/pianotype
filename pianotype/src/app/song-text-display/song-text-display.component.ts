@@ -1,5 +1,10 @@
 import { Component, OnInit, HostListener} from '@angular/core';
+//services
 import { PlayNotesService } from '../services/playnotes.service';
+import { LoadMusicXmlService } from '../services/load-music-xml.service';
+//data models
+import { XmlSong } from '../datamodels/xml-song';
+import { SingleNote } from '../datamodels/single-note';
 
 @Component({
   selector: 'app-song-text-display',
@@ -8,14 +13,17 @@ import { PlayNotesService } from '../services/playnotes.service';
 })
 export class SongTextDisplayComponent implements OnInit {
 	keyToNoteMap:any;
-
+	noteToKeyMap:any;
+	xmlSong:XmlSong;
+	parsedSong:SingleNote[];
 
 	constructor(
-		private playNotesService:PlayNotesService
+		private playNotesService:PlayNotesService,
+		private loadMusicXml:LoadMusicXmlService,
 	) {
 	}
 
-	generateKeyToNoteMap(noteToSetToLetter:string, letterToSetToNote:string):any{
+	generateKeyToNoteMap(noteToSetToLetter:string, letterToSetToNote:string):any {
 		/* 
 			pick a note that a letter will be mapped to. 
 			The rest of the mappings will be generated 
@@ -42,11 +50,12 @@ export class SongTextDisplayComponent implements OnInit {
 			currentLetter = keyboardOrder[i];
 			currentNote = noteOrder[(i + noteLetterDifference)%noteOrder.length]
 			outputMap[currentLetter] = currentNote;
+			outputMap[currentNote] = currentLetter;
 		}
 		return outputMap;
 	}
 
-	displayKeyToNoteMap(keyToNotemap){
+	displayKeyToNoteMap(keyToNotemap) {
 		let keyboardOrder:string[] = 'qwertyuiopasdfghjkl;\'zxcvbnm,./'.split('');
 		let output:string = '';
 		keyboardOrder.map((key)=>{
@@ -57,7 +66,86 @@ export class SongTextDisplayComponent implements OnInit {
 
 	ngOnInit() {
 		this.keyToNoteMap = this.generateKeyToNoteMap('C4', 'g');
-		console.log(this.displayKeyToNoteMap(this.keyToNoteMap));
+		console.log(this.keyToNoteMap);
+		let songName:string = 'Sonata No 1 Movement 1';
+		songName = 'moon light sonata';
+		songName = 'ill be there';
+		this.loadMusicXml.loadSong(songName,(xmlSong)=>{
+			this.xmlSong = xmlSong;
+			this.parsedSong = this.parseSong(xmlSong);
+			console.log(this.parsedSong);
+			this.parsedSong = this.parsedSong.filter((note)=>{return note.backup==0});
+			this.playSong(this.parsedSong);
+			console.log(this.parsedSong);
+		});
+	}
+
+	parseSong(xmlSong?:XmlSong):SingleNote[]{
+		let xmlSongDom = $.parseXML(xmlSong?xmlSong.xml:this.xmlSong.xml);
+		let measures:NodeListOf<Element> = xmlSongDom.getElementsByTagName('measure');
+		let outputNotes:SingleNote[] = [];
+		for(let i=0;i<measures.length;i++) {
+			this.parseMeasure(measures[i], Object(outputNotes));
+		}
+		this.translateSongNotesToKeys(outputNotes);
+		return outputNotes;
+
+	}
+
+	parseMeasure(measure:Element, arrayToAddNotesTo:SingleNote[]):void {
+		//TODO: look into unmarshalling this xml
+		let divisionsNode = measure.getElementsByTagName('divisions');
+		let divisions:number;
+		divisions = divisionsNode.length>0?parseInt(divisionsNode[0].textContent):null;
+
+		let noteNodes:NodeList = measure.childNodes;
+		let nodeName:string;
+		let backup:number = 0;
+		for (let i=0;i<noteNodes.length;i++){
+			nodeName = noteNodes[i].nodeName;
+			if (nodeName === 'note') {
+				this.parseNote(noteNodes[i], backup, Object(arrayToAddNotesTo));
+			} else if (nodeName === 'backup') {
+				backup += parseInt(noteNodes[i].textContent);
+			}
+		}
+	}
+
+	parseNote(note, divisionsToBackup:number, arrayToAddNotesTo:SingleNote[]){
+		let pitchElements:NodeListOf<Element> = note.getElementsByTagName('pitch');
+		let restElements:NodeListOf<Element> = note.getElementsByTagName('rest');
+		let durationElements:NodeListOf<Element> = note.getElementsByTagName('duration');
+		let duration:number = durationElements.length>0?parseInt(durationElements[0].textContent):null;
+		let pitch:string = 'rest';
+		let parsedNote:SingleNote = new SingleNote();
+		if (pitchElements.length > 0) {
+			pitch = pitchElements[0].getElementsByTagName('step')[0].textContent;
+			pitch += pitchElements[0].getElementsByTagName('octave')[0].textContent;
+			pitch = pitch.replace(/\s/g,'');
+		} else if (restElements.length > 0) {
+			pitch = 'RE';
+		}
+
+		parsedNote.note = pitch;
+		parsedNote.duration = duration;
+		parsedNote.backup = divisionsToBackup;
+		arrayToAddNotesTo.push(parsedNote);
+	}
+
+	translateSongNotesToKeys(songNotes:SingleNote[]){
+		songNotes.map((note:SingleNote)=>{
+			note.translatedKey = this.keyToNoteMap[note.note];
+		});
+	}
+
+	playSong(songNotes?:SingleNote[]){
+		songNotes = songNotes?songNotes:this.parsedSong;
+
+		console.log('playing song');
+		songNotes.map((note:SingleNote)=>{
+			//this.notes
+		});
+
 	}
 
 	@HostListener('document:keydown', ['$event'])
