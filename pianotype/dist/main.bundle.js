@@ -412,7 +412,7 @@ module.exports = module.exports.toString();
 /***/ "../../../../../src/app/song-text-display/song-text-display.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"translatedKeyBox\">\n\t<div class=\"translatedKey\" *ngFor=\"let note of parsedSong\">\n\t\t{{note.translatedKey}}\n\t</div>\n</div>\n<select [(ngModel)]=\"selectedSongName\" (change)=\"selectSong()\">\n\t<option *ngFor=\"let\tsongName of songNames\" value=\"{{songName}}\">\n\t\t{{songName}}\n\t</option>\n</select>"
+module.exports = "<select [(ngModel)]=\"selectedSongName\" (change)=\"selectSong()\">\n\t<option *ngFor=\"let\tsongName of songNames\" value=\"{{songName}}\">\n\t\t{{songName}}\n\t</option>\n</select>\n<div class=\"translatedKeyBox\">\n\t<div class=\"translatedKey\" *ngFor=\"let note of parsedSong\">\n\t\t{{note.translatedKey}}\n\t</div>\n</div>"
 
 /***/ }),
 
@@ -444,7 +444,7 @@ var SongTextDisplayComponent = (function () {
     function SongTextDisplayComponent(playNotesService, loadMusicXml) {
         this.playNotesService = playNotesService;
         this.loadMusicXml = loadMusicXml;
-        this.songNames = ['Sonata No 1 Movement 1', 'moon light sonata', 'ill be there', 'jingle bells', 'yankee doodle'];
+        this.songNames = ['Sonata No 1 Movement 1', 'moon light sonata', 'ill be there', 'jingle bells', 'yankee doodle', 'amazing grace', 'twinkle twinkle'];
         this.selectedSongName = this.songNames[1];
     }
     SongTextDisplayComponent.prototype.generateKeyToNoteMap = function (noteToSetToLetter, letterToSetToNote) {
@@ -489,11 +489,6 @@ var SongTextDisplayComponent = (function () {
         var _this = this;
         this.keyToNoteMap = this.generateKeyToNoteMap('C4', 'g');
         console.log(this.keyToNoteMap);
-        var songName = 'Sonata No 1 Movement 1';
-        songName = 'moon light sonata';
-        songName = 'ill be there';
-        songName = 'jingle bells';
-        songName = 'yankee doodle';
         this.selectSong();
         setTimeout(function () { console.log(_this.selectedSongName); }, 10000);
     };
@@ -568,7 +563,9 @@ var SongTextDisplayComponent = (function () {
         });
     };
     SongTextDisplayComponent.prototype.handleKeyUp = function (event) {
-        this.playNotesService.pressTone(this.keyToNoteMap[event.key]);
+        if (!event.repeat) {
+            this.playNotesService.pressTone(this.keyToNoteMap[event.key]);
+        }
     };
     SongTextDisplayComponent.prototype.handleKeyDown = function (event) {
         this.playNotesService.releaseTone(this.keyToNoteMap[event.key]);
