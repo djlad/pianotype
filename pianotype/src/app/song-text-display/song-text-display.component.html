@@ -1,10 +1,10 @@
-<div class="translatedKeyBox">
-	<div class="translatedKey" *ngFor="let note of parsedSong">
-		{{note.translatedKey}}
-	</div>
-</div>
 <select [(ngModel)]="selectedSongName" (change)="selectSong()">
 	<option *ngFor="let	songName of songNames" value="{{songName}}">
 		{{songName}}
 	</option>
 </select>
+<div class="translatedKeyBox">
+	<div class="translatedKey" *ngFor="let note of parsedSong">
+		{{note.translatedKey}}
+	</div>
+</div>
