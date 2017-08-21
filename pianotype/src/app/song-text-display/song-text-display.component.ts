@@ -17,7 +17,7 @@ export class SongTextDisplayComponent implements OnInit {
 	noteToKeyMap:any;
 	xmlSong:XmlSong;
 	parsedSong:SingleNote[];
-	songNames:string[] = ['Sonata No 1 Movement 1', 'moon light sonata', 'ill be there', 'jingle bells', 'yankee doodle']
+	songNames:string[] = ['Sonata No 1 Movement 1', 'moon light sonata', 'ill be there', 'jingle bells', 'yankee doodle', 'amazing grace', 'twinkle twinkle']
 	selectedSongName:string = this.songNames[1];
 
 	constructor(
@@ -70,11 +70,6 @@ export class SongTextDisplayComponent implements OnInit {
 	ngOnInit() {
 		this.keyToNoteMap = this.generateKeyToNoteMap('C4', 'g');
 		console.log(this.keyToNoteMap);
-		let songName:string = 'Sonata No 1 Movement 1';
-		songName = 'moon light sonata';
-		songName = 'ill be there';
-		songName = 'jingle bells';
-		songName = 'yankee doodle';
 		this.selectSong();
 		setTimeout(()=>{console.log(this.selectedSongName)},10000)
 	}
@@ -158,7 +153,9 @@ export class SongTextDisplayComponent implements OnInit {
 
 	@HostListener('document:keydown', ['$event'])
 	handleKeyUp(event: KeyboardEvent) {
-		this.playNotesService.pressTone(this.keyToNoteMap[event.key]);
+		if (!event.repeat) {
+			this.playNotesService.pressTone(this.keyToNoteMap[event.key]);
+		}
 	}
 
 	@HostListener('document:keyup', ['$event'])
