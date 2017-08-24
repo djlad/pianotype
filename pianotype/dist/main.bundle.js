@@ -444,7 +444,7 @@ var SongTextDisplayComponent = (function () {
     function SongTextDisplayComponent(playNotesService, loadMusicXml) {
         this.playNotesService = playNotesService;
         this.loadMusicXml = loadMusicXml;
-        this.songNames = ['amazing grace', 'Sonata No 1 Movement 1', 'moon light sonata', 'ill be there', 'jingle bells', 'yankee doodle', 'twinkle twinkle', 'happy birthday', 'fur elise', 'haru haru', 'bts save me', 'kum bah ya'];
+        this.songNames = ['amazing grace', 'Sonata No 1 Movement 1', 'moon light sonata', 'ill be there', 'jingle bells', 'yankee doodle', 'twinkle twinkle', 'happy birthday', 'fur elise', 'haru haru', 'bts save me', 'kum bah ya', 'its you'];
         this.selectedSongName = this.songNames[0];
     }
     SongTextDisplayComponent.prototype.generateKeyToNoteMap = function (noteToSetToLetter, letterToSetToNote) {
