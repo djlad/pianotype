@@ -17,7 +17,7 @@ export class SongTextDisplayComponent implements OnInit {
 	noteToKeyMap:any;
 	xmlSong:XmlSong;
 	parsedSong:SingleNote[];
-	songNames:string[] = ['amazing grace', 'Sonata No 1 Movement 1', 'moon light sonata', 'ill be there', 'jingle bells', 'yankee doodle', 'amazing grace', 'twinkle twinkle', 'happy birthday', 'fur elise']
+	songNames:string[] = ['amazing grace', 'Sonata No 1 Movement 1', 'moon light sonata', 'ill be there', 'jingle bells', 'yankee doodle', 'twinkle twinkle', 'happy birthday', 'fur elise', 'haru haru', 'bts save me', 'kum bah ya']
 	selectedSongName:string = this.songNames[0];
 
 	constructor(
